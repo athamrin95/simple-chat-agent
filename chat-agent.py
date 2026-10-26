@@ -4,15 +4,17 @@ from openai import OpenAI
 from dotenv import load_dotenv
 
 
-def call_ai(client:OpenAI, user_input:str, openrouter_model:str) -> None:
+def call_ai(client:OpenAI, messages:str, openrouter_model:str) -> str:
+    reply:str
     try:
-        response = client.responses.create(
+        response = client.chat.completions.create(
             model=openrouter_model,
-            input=user_input,
+            messages=messages,
         )
-        print(response.output_text)
+        return response.choices[0].message.content
     except Exception as e:
         print(f"An error occured: {e}")
+        return None
 
 def main() -> None:
     load_dotenv()
@@ -25,6 +27,7 @@ def main() -> None:
 
     client = OpenAI(api_key=openrouter_api_key, base_url=openrouter_base_url)
     print(f"This is a chat terminal for communicating with A.I. model '{openrouter_model}'")
+    messages = []
     while True:
         user_input = input("Your input (Type 'keluar' to exit): ")
         if user_input.strip().lower() == 'keluar':
@@ -32,7 +35,13 @@ def main() -> None:
         if user_input.strip() == '':
             print(f"You've entered an empty command, please try again.")
             continue
-        call_ai(client, user_input, openrouter_model)
+        
+        messages.append({"role": "user", "content": user_input})
+        reply = call_ai(client, messages, openrouter_model)
+        if reply:
+            print(reply)
+            messages.append({"role": "assistant", "content": reply})
+            
 
 if __name__ == "__main__":
     main()
