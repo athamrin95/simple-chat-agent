@@ -13,7 +13,7 @@ def call_ai(client:OpenAI, messages:str, openrouter_model:str) -> str:
         )
         return response.choices[0].message.content
     except Exception as e:
-        print(f"An error occured: {e}")
+        print(f"An error occurred: {e}")
         return None
 
 def main() -> None:
