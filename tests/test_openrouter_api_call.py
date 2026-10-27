@@ -15,6 +15,10 @@ class TestCallAI(unittest.TestCase):
         result = call_ai(mock_client, messages, model_name)
         
         self.assertEqual(result, "Hello from the AI!")
+        mock_client.chat.completions.create.assert_called_once_with(
+            model=model_name,
+            messages=messages
+        )
 
     def test_call_ai_exception_handling(self):
         mock_client = MagicMock(spec=OpenAI)
